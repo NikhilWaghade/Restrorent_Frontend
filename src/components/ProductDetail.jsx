@@ -20,7 +20,7 @@ const ProductDetail = () => {
       try {
         const { data } = await axios.get(`http://localhost:5000/api/menu/${id}`);
         setItem(data);
-        setReviews(data.reviews || []); // assuming reviews array in backend
+        setReviews(data.reviews || []);
         setLoading(false);
       } catch (error) {
         console.error('Error fetching item details:', error);
@@ -33,7 +33,6 @@ const ProductDetail = () => {
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
     setError('');
-
     if (!userName.trim() || !userComment.trim()) {
       setError('Please enter your name and comment.');
       return;
@@ -46,12 +45,7 @@ const ProductDetail = () => {
         rating: userRating,
         comment: userComment,
       };
-
-      // POST to backend review API (you need to create this route in backend)
       const { data } = await axios.post(`http://localhost:5000/api/menu/${id}/reviews`, newReview);
-
-
-      // Update reviews locally with response data
       setReviews(data.reviews);
       setUserName('');
       setUserRating(5);
@@ -64,8 +58,45 @@ const ProductDetail = () => {
     }
   };
 
-  if (loading) return <p className="text-center mt-10">Loading...</p>;
+  const handlePayment = async () => {
+    try {
+      // Call your backend to create Razorpay order
+      const { data: order } = await axios.post('http://localhost:5000/api/payment/order', {
+        amount: item.price * 100, // in paisa
+      });
 
+      const options = {
+        key: 'rzp_test_YourKeyHere', // Replace with your Razorpay key
+        amount: order.amount,
+        currency: 'INR',
+        name: 'Excellup Coding Store',
+        description: `Order for ${item.name}`,
+        image: '/logo.png', // optional logo
+        order_id: order.id,
+        handler: async function (response) {
+          alert('Payment successful!');
+          console.log(response);
+          // Optionally send payment success to backend
+        },
+        prefill: {
+          name: 'Customer Name',
+          email: 'customer@example.com',
+          contact: '9999999999',
+        },
+        theme: {
+          color: '#EF4444',
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } catch (error) {
+      console.error('Payment initiation failed:', error);
+      alert('Payment failed. Please try again.');
+    }
+  };
+
+  if (loading) return <p className="text-center mt-10">Loading...</p>;
   if (!item) return <p className="text-center mt-10">Product not found.</p>;
 
   return (
@@ -74,7 +105,7 @@ const ProductDetail = () => {
         <img src={item.imageUrl} alt={item.name} className="w-full h-64 object-contain" />
         <div className="p-6">
           <h1 className="text-3xl font-bold mb-2">{item.name}</h1>
-          <p className="text-gray-700 text-lg mb-2">Price: ${item.price}</p>
+          <p className="text-gray-700 text-lg mb-2">Price: ₹{item.price}</p>
           <p className="text-sm text-gray-600 mb-4">Category: {item.category}</p>
           <p className="mb-6">{item.description}</p>
 
@@ -143,12 +174,22 @@ const ProductDetail = () => {
             <button
               type="submit"
               disabled={submitting}
-              className="bg-red-600 text-white px-5 py-2 rounded hover:bg-red-700 transition"
+              className="bg-pink-600 text-white px-5 py-2 rounded hover:bg-red-700 transition"
             >
               {submitting ? 'Submitting...' : 'Submit Review'}
             </button>
           </form>
         </div>
+      </div>
+
+      {/* Payment Button */}
+      <div className="flex justify-center mt-6">
+        <button
+          onClick={handlePayment}
+          className="bg-green-600 text-white py-3 px-6 rounded hover:bg-green-700 transition text-lg"
+        >
+          Confirm & Pay Now
+        </button>
       </div>
     </div>
   );
