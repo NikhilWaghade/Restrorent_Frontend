@@ -1,0 +1,149 @@
+/* Base Styles */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  color: #333;
+}
+
+.App {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Header Styles */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.nav-menu a {
+  margin: 0 15px;
+  text-decoration: none;
+  color: #333;
+}
+
+/* Welcome Banner */
+.welcome-banner {
+  text-align: center;
+  padding: 50px 0;
+}
+
+.welcome-banner h1 {
+  font-size: 48px;
+  margin-bottom: 10px;
+}
+
+/* Food Items Section */
+.food-items {
+  margin: 40px 0;
+}
+
+.popular-items, .best-selling {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin: 20px 0;
+}
+
+.food-item {
+  width: 23%;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.special-offers {
+  display: flex;
+  justify-content: space-between;
+  margin: 30px 0;
+}
+
+.offer {
+  width: 30%;
+  text-align: center;
+  padding: 20px;
+  background-color: #f9f9f9;
+}
+
+.cuisine-text {
+  text-align: center;
+  margin: 40px 0;
+}
+
+/* Menu Section */
+.menu-section {
+  margin: 50px 0;
+}
+
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.menu-item {
+  padding: 15px;
+  border: 1px solid #eee;
+}
+
+.price {
+  font-weight: bold;
+  color: #e67e22;
+}
+
+.discount-offer {
+  text-align: center;
+  margin: 30px 0;
+  padding: 20px;
+  background-color: #f1c40f;
+}
+
+.chef-profiles {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 30px;
+}
+
+/* Testimonials */
+.testimonials {
+  text-align: center;
+  margin: 50px 0;
+}
+
+.testimonial-card {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+}
+
+/* Blog Section */
+.blog-section {
+  margin: 50px 0;
+}
+
+.blog-posts {
+  display: flex;
+  justify-content: space-between;
+}
+
+.blog-post {
+  width: 30%;
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  padding: 20px;
+  border-top: 1px solid #eee;
+  margin-top: 50px;
+}
