@@ -264,7 +264,7 @@ const Home = () => {
           delaySpeed={1000}
         />
       </h1>
-      <p className="mt-4 text-lg">Welcome Fresheat - 50% OFF</p>
+      <p className="mt-4 text-lg">Welcome india - 50% OFF</p>
       <button className="mt-6 bg-red-500 hover:bg-red-600 transition px-6 py-2 rounded-full">
         Order Now
       </button>

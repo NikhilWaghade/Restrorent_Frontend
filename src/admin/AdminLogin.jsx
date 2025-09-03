@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
-import { ToastContainer, toast } from 'react-toastify';  // import toast
-import 'react-toastify/dist/ReactToastify.css'; // import toast styles
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const AdminLogin = () => {
   const navigate = useNavigate();
@@ -25,23 +26,22 @@ const AdminLogin = () => {
       );
 
       localStorage.setItem('isAdminAuthenticated', 'true');
-      toast.success('Login successful!'); // show toast success message
+      toast.success('Login successful! Redirecting...');
 
-      // wait a bit so user sees toast, then navigate
       setTimeout(() => {
-        navigate('/admin/panel');
-      }, 1200);
+        navigate('/admin/panel');  
+      }, 1000);
 
       console.log('Login successful:', response.data);
     } catch (error) {
       console.error('Login failed:', error.response?.data?.message);
-      toast.error(error.response?.data?.message || 'Login failed'); // show toast error message
+      toast.error(error.response?.data?.message || 'Login failed');
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-      <ToastContainer position="top-right" autoClose={3000} /> {/* Toast container */}
+      <ToastContainer position="top-right" autoClose={3000} />
       <form
         onSubmit={handleLogin}
         className="bg-white shadow-md rounded-xl p-8 w-full max-w-md"

@@ -14,7 +14,7 @@ import AdminLogin from './admin/AdminLogin';
 import AdminSignup from './admin/AdminSignup';
 import ProtectedRoute from './components/ProtectedRoute';
 
-// import ProtectedRoute from './components/ProtectedRoute'
+
 
 function App() {
   return (
@@ -30,13 +30,10 @@ function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/gallery" element={<Gallery />} />
         <Route path="/product/:id" element={<ProductDetail />} />
-
-
         
       <Route path="/admin/login" element={<AdminLogin />} />
       <Route path="/admin/signup" element={<AdminSignup />} />
 
-        {/* <Route path="/adminPannel" element={<AdminPanel />} />   */}
         
          {/* Protected Admin Panel Route */}
      <Route

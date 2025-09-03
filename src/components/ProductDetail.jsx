@@ -1,4 +1,3 @@
-// src/pages/ProductDetail.jsx
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
@@ -16,6 +15,12 @@ const ProductDetail = () => {
   const [error, setError] = useState('');
 
   useEffect(() => {
+    if (!id || id === "undefined") {
+      setLoading(false);
+      setError('Product ID is missing. Please check the URL.');
+      return;
+    }
+
     const fetchItem = async () => {
       try {
         const { data } = await axios.get(`http://localhost:5000/api/menu/${id}`);
@@ -24,6 +29,7 @@ const ProductDetail = () => {
         setLoading(false);
       } catch (error) {
         console.error('Error fetching item details:', error);
+        setError('Failed to load product details. Please try again later.');
         setLoading(false);
       }
     };
@@ -33,6 +39,12 @@ const ProductDetail = () => {
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    
+    if (!id || id === "undefined") {
+      setError('Cannot submit review: Product ID is missing.');
+      return;
+    }
+    
     if (!userName.trim() || !userComment.trim()) {
       setError('Please enter your name and comment.');
       return;
@@ -45,8 +57,31 @@ const ProductDetail = () => {
         rating: userRating,
         comment: userComment,
       };
+      
       const { data } = await axios.post(`http://localhost:5000/api/menu/${id}/reviews`, newReview);
-      setReviews(data.reviews);
+      
+      console.log("API Response:", data);
+      
+      // Handle different possible response formats from backend
+      if (data.reviews) {
+        // If backend returns the full reviews array
+        setReviews(data.reviews);
+      } else if (data.review) {
+        // If backend returns just the new review
+        setReviews(prevReviews => [...prevReviews, data.review]);
+      } else if (data) {
+        // If backend returns the updated product
+        setReviews(data.reviews || []);
+      } else {
+        // If backend returns something unexpected, just add our local review
+        setReviews(prevReviews => [...prevReviews, {
+          user: userName,
+          rating: userRating,
+          comment: userComment,
+          createdAt: new Date().toISOString()
+        }]);
+      }
+      
       setUserName('');
       setUserRating(5);
       setUserComment('');
@@ -59,24 +94,32 @@ const ProductDetail = () => {
   };
 
   const handlePayment = async () => {
+    if (!id || id === "undefined") {
+      setError('Cannot process payment: Product ID is missing.');
+      return;
+    }
+    
+    if (!item) {
+      setError('Cannot process payment: Product information is missing.');
+      return;
+    }
+
     try {
-      // Call your backend to create Razorpay order
       const { data: order } = await axios.post('http://localhost:5000/api/payment/order', {
-        amount: item.price * 100, // in paisa
+        amount: item.price * 100,
       });
 
       const options = {
-        key: 'rzp_test_YourKeyHere', // Replace with your Razorpay key
+        key: 'rzp_test_YourKeyHere',
         amount: order.amount,
         currency: 'INR',
         name: 'Excellup Coding Store',
         description: `Order for ${item.name}`,
-        image: '/logo.png', // optional logo
+        image: '/logo.png',
         order_id: order.id,
         handler: async function (response) {
           alert('Payment successful!');
           console.log(response);
-          // Optionally send payment success to backend
         },
         prefill: {
           name: 'Customer Name',
@@ -97,12 +140,15 @@ const ProductDetail = () => {
   };
 
   if (loading) return <p className="text-center mt-10">Loading...</p>;
+  if (!id || id === "undefined") return <p className="text-center mt-10 text-red-600">Error: Product ID is missing. Please check the URL.</p>;
   if (!item) return <p className="text-center mt-10">Product not found.</p>;
 
   return (
     <div className="max-w-4xl mx-auto p-6">
+      {error && <p className="text-red-600 mb-4 text-center bg-red-100 p-2 rounded">{error}</p>}
+      
       <div className="bg-white shadow-md rounded-lg overflow-hidden">
-        <img src={item.imageUrl} alt={item.name} className="w-full h-64 object-contain" />
+        <img src={item.image_url} alt={item.name} className="w-full h-64 object-contain" />
         <div className="p-6">
           <h1 className="text-3xl font-bold mb-2">{item.name}</h1>
           <p className="text-gray-700 text-lg mb-2">Price: ₹{item.price}</p>
@@ -114,13 +160,18 @@ const ProductDetail = () => {
           <h2 className="text-2xl font-bold mb-4">Customer Reviews</h2>
           {reviews.length > 0 ? (
             reviews.map((review, index) => (
-              <div key={index} className="mb-4 border-b pb-4">
-                <p className="font-semibold">{review.user}</p>
+              <div key={review._id || index} className="mb-4 border-b pb-4">
+                <p className="font-semibold">
+                  {review.user_name || (review.user_name && review.user_name) || 'Anonymous'}
+                </p>
                 <p className="text-yellow-500">
                   {'⭐'.repeat(review.rating)}{' '}
                   <span className="text-gray-600">({review.rating}/5)</span>
                 </p>
                 <p>{review.comment}</p>
+                <p className="text-xs text-gray-500 mt-1">
+                  {new Date(review.createdAt || review.date).toLocaleDateString()}
+                </p>
               </div>
             ))
           ) : (
@@ -129,7 +180,6 @@ const ProductDetail = () => {
 
           <form onSubmit={handleReviewSubmit} className="mt-6">
             <h3 className="text-xl font-semibold mb-4">Add Your Review</h3>
-            {error && <p className="text-red-600 mb-3">{error}</p>}
 
             <label className="block mb-2">
               Name:
@@ -182,7 +232,6 @@ const ProductDetail = () => {
         </div>
       </div>
 
-      {/* Payment Button */}
       <div className="flex justify-center mt-6">
         <button
           onClick={handlePayment}

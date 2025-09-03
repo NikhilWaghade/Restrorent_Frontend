@@ -69,7 +69,7 @@ const AdminPanel = () => {
         await axios.post('http://localhost:5000/api/menu', form);
         toast.success('Menu item added successfully!');
       }
-      setForm({ name: '', description: '', price: '', category: '', imageUrl: '' });
+      setForm({ name: '', description: '', price: '', category: '', image_url: '' });
       setEditId(null);
       fetchItems();
     } catch (error) {
@@ -89,7 +89,7 @@ const AdminPanel = () => {
 
   const handleEdit = (item) => {
     setForm(item);
-    setEditId(item._id);
+    setEditId(item._id || item.id); 
     setActiveSection('add');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -187,7 +187,7 @@ const AdminPanel = () => {
               <input type="text" placeholder="Description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="w-full p-2 border rounded" required />
               <input type="number" placeholder="Price" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} className="w-full p-2 border rounded" required />
               <input type="text" placeholder="Category" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} className="w-full p-2 border rounded" required />
-              <input type="text" placeholder="Image URL" value={form.imageUrl} onChange={(e) => setForm({ ...form, imageUrl: e.target.value })} className="w-full p-2 border rounded" required />
+              <input type="text" placeholder="Image URL" value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} className="w-full p-2 border rounded" required />
               <div className="flex flex-wrap gap-4">
                 <button type="submit" className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
                   {editId ? 'Update Item' : 'Add Item'}
@@ -196,7 +196,7 @@ const AdminPanel = () => {
                   <button
                     type="button"
                     onClick={() => {
-                      setForm({ name: '', description: '', price: '', category: '', imageUrl: '' });
+                      setForm({ name: '', description: '', price: '', category: '', image_url: '' });
                       setEditId(null);
                     }}
                     className="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded"
@@ -210,23 +210,26 @@ const AdminPanel = () => {
         )}
 
         {activeSection === 'list' && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-            {items.length ? (
-              items.map((item) => (
-                <div key={item._id} className="bg-white p-3 rounded shadow text-sm">
-                  <h3 className="text-base font-semibold">{item.name} <span className="text-green-600">(${item.price})</span></h3>
-                  <p className="text-gray-600 mb-1">{item.description}</p>
-                  <p className="text-gray-500 text-sm">Category: {item.category}</p>
-                  {item.imageUrl && <img src={item.imageUrl} alt={item.name} className="w-full h-28 object-cover mt-2 rounded" />}
-                  <div className="flex gap-2 mt-2">
-                    <button onClick={() => handleEdit(item)} className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 text-xs rounded">Edit</button>
-                    <button onClick={() => handleDelete(item._id)} className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 text-xs rounded">Delete</button>
+          <div className="mt-4">
+            <h2 className="text-xl font-semibold mb-4">Product List</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {items.length ? (
+                items.map((item) => (
+                  <div key={item._id || item.id} className="bg-white p-3 rounded shadow text-sm">
+                    <h3 className="text-base font-semibold">{item.name} <span className="text-green-600">(${item.price})</span></h3>
+                    <p className="text-gray-600 mb-1">{item.description}</p>
+                    <p className="text-gray-500 text-sm">Category: {item.category}</p>
+                    {item.image_url && <img src={item.image_url} alt={item.name} className="w-full h-28 object-cover mt-2 rounded" />}
+                    <div className="flex gap-2 mt-2">
+                      <button onClick={() => handleEdit(item)} className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 text-xs rounded">Edit</button>
+                      <button onClick={() => handleDelete(item._id || item.id)} className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 text-xs rounded">Delete</button>
+                    </div>
                   </div>
-                </div>
-              ))
-            ) : (
-              <p className="text-center text-gray-500 col-span-full">No menu items found.</p>
-            )}
+                ))
+              ) : (
+                <p className="text-center text-gray-500 col-span-full">No menu items found.</p>
+              )}
+            </div>
           </div>
         )}
       </div>

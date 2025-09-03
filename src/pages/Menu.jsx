@@ -1,4 +1,3 @@
-// src/pages/MenuSection.jsx
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
@@ -51,12 +50,12 @@ const MenuSection = () => {
           {menuItems.length > 0 ? (
             menuItems.map((item) => (
               <div
-                key={item._id}
+                key={item.id}
                 className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 flex flex-col justify-between hover:bg-black hover:text-white"
               >
-                <Link to={`/product/${item._id}`}>
+                <Link to={`/product/${item.id}`}>
                   <img
-                    src={item.imageUrl}
+                    src={item.image_url}
                     alt={item.name}
                     className="w-full h-52 object-contain"
                   />
@@ -68,7 +67,7 @@ const MenuSection = () => {
                     <p className="text-sm mt-2">{item.description}</p>
                   </div>
                   <button
-                    onClick={() => navigate(`/product/${item._id}`)}
+                    onClick={() => navigate(`/product/${item.id}`)}
                     className="mt-4 bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700 transition"
                   >
                     Order Now
