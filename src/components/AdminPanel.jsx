@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { useNavigate } from 'react-router-dom';
-import { Line, Bar } from 'react-chartjs-2';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
+import { FaChartLine, FaPlus, FaList, FaSignOutAlt, FaHome } from "react-icons/fa";
+import { Line, Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -14,13 +15,7 @@ import {
   Title,
   Tooltip,
   Legend,
-} from 'chart.js';
-import {
-  FaChartLine,
-  FaPlus,
-  FaList,
-  FaSignOutAlt,
-} from 'react-icons/fa';
+} from "chart.js";
 
 ChartJS.register(
   CategoryScale,
@@ -34,139 +29,153 @@ ChartJS.register(
 );
 
 const AdminPanel = () => {
-  const [items, setItems] = useState([]);
+  const [products, setProducts] = useState([]);
   const [form, setForm] = useState({
-    name: '',
-    description: '',
-    price: '',
-    category: '',
-    imageUrl: '',
+    name: "",
+    description: "",
+    price: "",
+    category: "",
+    image_url: "",
   });
   const [editId, setEditId] = useState(null);
-  const [activeSection, setActiveSection] = useState('dashboard');
+  const [activeSection, setActiveSection] = useState("dashboard");
   const navigate = useNavigate();
 
-  const fetchItems = async () => {
+  // Fetch Products
+  const fetchProducts = async () => {
     try {
-      const { data } = await axios.get('http://localhost:5000/api/menu');
-      setItems(Array.isArray(data) ? data : []);
+      const { data } = await axios.get("http://localhost:5000/api/menu");
+      setProducts(data);
     } catch (error) {
-      toast.error('Failed to fetch menu items');
+      console.error(error);
+      toast.error("Failed to fetch products");
     }
   };
 
   useEffect(() => {
-    fetchItems();
+    fetchProducts();
   }, []);
 
+  // Create / Update Product
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const payload = { ...form, price: Number(form.price) };
+
       if (editId) {
-        await axios.put(`http://localhost:5000/api/menu/${editId}`, form);
-        toast.success('Menu item updated successfully!');
+        await axios.put(`http://localhost:5000/api/menu/${editId}`, payload);
+        toast.success("Product updated successfully!");
       } else {
-        await axios.post('http://localhost:5000/api/menu', form);
-        toast.success('Menu item added successfully!');
+        await axios.post("http://localhost:5000/api/menu", payload);
+        toast.success("Product added successfully!");
       }
-      setForm({ name: '', description: '', price: '', category: '', image_url: '' });
+
+      setForm({ name: "", description: "", price: "", category: "", image_url: "" });
       setEditId(null);
-      fetchItems();
+      setActiveSection("list");
+      fetchProducts();
     } catch (error) {
-      toast.error('Failed to submit menu item');
+      console.error(error);
+      toast.error(error.response?.data?.message || "Failed to submit product");
     }
   };
 
+  // Delete
   const handleDelete = async (id) => {
     try {
       await axios.delete(`http://localhost:5000/api/menu/${id}`);
-      toast.success('Item deleted successfully!');
-      fetchItems();
+      toast.success("Product deleted successfully!");
+      fetchProducts();
     } catch (error) {
-      toast.error('Failed to delete item');
+      console.error(error);
+      toast.error("Failed to delete product");
     }
   };
 
-  const handleEdit = (item) => {
-    setForm(item);
-    setEditId(item._id || item.id); 
-    setActiveSection('add');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  // Edit
+  const handleEdit = (product) => {
+    setForm({ ...product });
+    setEditId(product.id);
+    setActiveSection("add");
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  // Logout
   const handleLogout = () => {
-    localStorage.removeItem('adminToken');
-    toast.success('Logged out successfully');
-    setTimeout(() => {
-      navigate('/');
-    }, 1000);
+    localStorage.removeItem("isAdminAuthenticated");
+    toast.success("Logged out successfully");
+    setTimeout(() => navigate("/admin/login"), 1000);
   };
 
+  // Dummy chart data
   const growthData = {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+    labels: ["Jan", "Feb", "Mar", "Apr", "May"],
     datasets: [
       {
-        label: 'User Growth',
+        label: "User Growth",
         data: [50, 75, 150, 200, 250],
-        borderColor: 'rgb(34 197 94)',
-        backgroundColor: 'rgba(34, 197, 94, 0.5)',
+        borderColor: "rgb(34 197 94)",
+        backgroundColor: "rgba(34, 197, 94, 0.5)",
       },
     ],
   };
 
   const salesData = {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+    labels: ["Jan", "Feb", "Mar", "Apr", "May"],
     datasets: [
       {
-        label: 'Product Sales',
+        label: "Product Sales",
         data: [30, 60, 100, 180, 220],
-        backgroundColor: 'rgb(59 130 246)',
+        backgroundColor: "rgb(59 130 246)",
       },
     ],
   };
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen">
+    <div className="flex min-h-screen">
       <ToastContainer position="top-right" autoClose={3000} />
 
       {/* Sidebar */}
-      <div className="bg-gray-800 text-white p-4 w-full md:w-64 flex md:flex-col items-center md:items-start">
-        <h2 className="text-xl font-bold mb-6 hidden md:block">Admin</h2>
-        <div className="flex md:flex-col gap-3 w-full justify-around md:justify-start">
+      <div className="bg-gray-800 text-white w-64 flex flex-col p-4">
+        <h2 className="text-2xl font-bold mb-6 text-center">Admin</h2>
+        <div className="flex flex-col gap-3">
           <button
-            onClick={() => setActiveSection('dashboard')}
-            className="flex items-center gap-2 py-2 px-3 hover:bg-gray-700 rounded w-full"
+            onClick={() => setActiveSection("dashboard")}
+            className={`flex items-center gap-2 px-3 py-2 rounded hover:bg-gray-700 ${
+              activeSection === "dashboard" ? "bg-gray-700" : ""
+            }`}
           >
-            <FaChartLine />
-            <span className="hidden md:inline">Dashboard</span>
+            <FaHome /> Dashboard
           </button>
           <button
-            onClick={() => setActiveSection('add')}
-            className="flex items-center gap-2 py-2 px-3 hover:bg-gray-700 rounded w-full"
+            onClick={() => setActiveSection("add")}
+            className={`flex items-center gap-2 px-3 py-2 rounded hover:bg-gray-700 ${
+              activeSection === "add" ? "bg-gray-700" : ""
+            }`}
           >
-            <FaPlus />
-            <span className="hidden md:inline">Add Product</span>
+            <FaPlus /> Add Product
           </button>
           <button
-            onClick={() => setActiveSection('list')}
-            className="flex items-center gap-2 py-2 px-3 hover:bg-gray-700 rounded w-full"
+            onClick={() => setActiveSection("list")}
+            className={`flex items-center gap-2 px-3 py-2 rounded hover:bg-gray-700 ${
+              activeSection === "list" ? "bg-gray-700" : ""
+            }`}
           >
-            <FaList />
-            <span className="hidden md:inline">Product List</span>
+            <FaList /> Product List
           </button>
           <button
             onClick={handleLogout}
-            className="flex items-center gap-2 py-2 px-3 hover:bg-gray-700 rounded w-full"
+            className="flex items-center gap-2 px-3 py-2 rounded hover:bg-gray-700 mt-auto"
           >
-            <FaSignOutAlt />
-            <span className="hidden md:inline">Logout</span>
+            <FaSignOutAlt /> Logout
           </button>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 p-4 overflow-y-auto">
-        {activeSection === 'dashboard' && (
+      <div className="flex-1 p-6 bg-gray-100">
+        {/* Dashboard */}
+        {activeSection === "dashboard" && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-white p-4 rounded shadow">
               <h3 className="text-lg font-semibold mb-2">User Growth</h3>
@@ -179,57 +188,100 @@ const AdminPanel = () => {
           </div>
         )}
 
-        {activeSection === 'add' && (
-          <div className="mt-4">
-            <h2 className="text-xl font-semibold mb-4">{editId ? 'Edit Menu Item' : 'Add Menu Item'}</h2>
-            <form onSubmit={handleSubmit} className="bg-gray-100 p-4 rounded space-y-4">
-              <input type="text" placeholder="Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="w-full p-2 border rounded" required />
-              <input type="text" placeholder="Description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="w-full p-2 border rounded" required />
-              <input type="number" placeholder="Price" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} className="w-full p-2 border rounded" required />
-              <input type="text" placeholder="Category" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} className="w-full p-2 border rounded" required />
-              <input type="text" placeholder="Image URL" value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} className="w-full p-2 border rounded" required />
-              <div className="flex flex-wrap gap-4">
-                <button type="submit" className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
-                  {editId ? 'Update Item' : 'Add Item'}
-                </button>
-                {editId && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setForm({ name: '', description: '', price: '', category: '', image_url: '' });
-                      setEditId(null);
-                    }}
-                    className="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded"
-                  >
-                    Cancel
-                  </button>
-                )}
-              </div>
+        {/* Add / Edit Product Full Width */}
+        {activeSection === "add" && (
+          <div className="bg-white p-6 rounded shadow w-full h-full">
+            <h3 className="text-xl font-semibold mb-6">{editId ? "Edit Product" : "Add Product"}</h3>
+            <form className="grid grid-cols-1 md:grid-cols-2 gap-4" onSubmit={handleSubmit}>
+              <input
+                type="text"
+                placeholder="Name"
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                className="border p-2 rounded w-full"
+                required
+              />
+              <input
+                type="text"
+                placeholder="Description"
+                value={form.description}
+                onChange={(e) => setForm({ ...form, description: e.target.value })}
+                className="border p-2 rounded w-full"
+                required
+              />
+              <input
+                type="number"
+                placeholder="Price"
+                value={form.price}
+                onChange={(e) => setForm({ ...form, price: e.target.value })}
+                className="border p-2 rounded w-full"
+                required
+              />
+              <input
+                type="text"
+                placeholder="Category"
+                value={form.category}
+                onChange={(e) => setForm({ ...form, category: e.target.value })}
+                className="border p-2 rounded w-full"
+                required
+              />
+              <input
+                type="text"
+                placeholder="Image URL"
+                value={form.image_url}
+                onChange={(e) => setForm({ ...form, image_url: e.target.value })}
+                className="border p-2 rounded w-full md:col-span-2"
+                required
+              />
+              <button
+                type="submit"
+                className="bg-green-600 text-white py-2 rounded hover:bg-green-700 md:col-span-2"
+              >
+                {editId ? "Update" : "Add"} Product
+              </button>
             </form>
           </div>
         )}
 
-        {activeSection === 'list' && (
-          <div className="mt-4">
-            <h2 className="text-xl font-semibold mb-4">Product List</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {items.length ? (
-                items.map((item) => (
-                  <div key={item._id || item.id} className="bg-white p-3 rounded shadow text-sm">
-                    <h3 className="text-base font-semibold">{item.name} <span className="text-green-600">(${item.price})</span></h3>
-                    <p className="text-gray-600 mb-1">{item.description}</p>
-                    <p className="text-gray-500 text-sm">Category: {item.category}</p>
-                    {item.image_url && <img src={item.image_url} alt={item.name} className="w-full h-28 object-cover mt-2 rounded" />}
+        {/* Product List */}
+        {activeSection === "list" && (
+          <div>
+            <h3 className="text-xl font-semibold mb-4">Product List</h3>
+            {products.length ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {products.map((p) => (
+                  <div
+                    key={p.id}
+                    className="bg-white p-4 rounded shadow flex flex-col items-center hover:shadow-lg transition-shadow duration-200"
+                  >
+                    <img
+                      src={p.image_url}
+                      alt={p.name}
+                      className="w-32 h-32 object-cover rounded mb-2"
+                    />
+                    <h4 className="font-semibold">{p.name}</h4>
+                    <p>${p.price}</p>
+                    <p className="text-gray-500 text-sm">{p.category}</p>
                     <div className="flex gap-2 mt-2">
-                      <button onClick={() => handleEdit(item)} className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 text-xs rounded">Edit</button>
-                      <button onClick={() => handleDelete(item._id || item.id)} className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 text-xs rounded">Delete</button>
+                      <button
+                        onClick={() => handleEdit(p)}
+                        className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(p.id)}
+                        className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                      >
+                        Delete
+                      </button>
                     </div>
                   </div>
-                ))
-              ) : (
-                <p className="text-center text-gray-500 col-span-full">No menu items found.</p>
-              )}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <p>No products found</p>
+            )}
           </div>
         )}
       </div>

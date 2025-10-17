@@ -20,7 +20,7 @@ const AdminSignup = () => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        'http://localhost:5000/api/auth/admin-signup',
+        'http://localhost:5000/api/auth/admin/signup',
         formData,
         { withCredentials: true }
       );

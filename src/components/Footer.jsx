@@ -42,10 +42,10 @@ const Footer = () => {
           <h2 className="text-lg font-semibold text-white mb-4">Our Menu</h2>
           <ul className="space-y-2">
             <li><a href="#" className="hover:text-yellow-500">Burger King</a></li>
-            <li><a href="#" className="hover:text-yellow-500">Pizza King</a></li>
-            <li><a href="#" className="hover:text-yellow-500">Fresh Food</a></li>
-            <li><a href="#" className="hover:text-yellow-500">Vegetable</a></li>
-            <li><a href="#" className="hover:text-yellow-500">Desserts</a></li>
+            <li><Link to="#" className="hover:text-yellow-500">Pizza King</Link></li>
+            <li><Link to="#" className="hover:text-yellow-500">Fresh Food</Link></li>
+            <li><Link to="#" className="hover:text-yellow-500">Vegetable</Link></li>
+            <li><Link to="#" className="hover:text-yellow-500">Desserts</Link></li>
           </ul>
         </div>
 
@@ -73,8 +73,8 @@ const Footer = () => {
       <div className="mt-10 border-t border-gray-700 pt-6 flex flex-col md:flex-row justify-between text-sm">
         <p>© All Copyright 2024 by FreshEat</p>
         <div className="flex gap-4 mt-2 md:mt-0">
-          <a href="#" className="hover:text-yellow-500">Terms & Condition</a>
-          <a href="#" className="hover:text-yellow-500">Privacy Policy</a>
+          <Link to="#" className="hover:text-yellow-500">Terms & Condition</Link>
+          <Link to="#" className="hover:text-yellow-500">Privacy Policy</Link>
         </div>
       </div>
     </footer>

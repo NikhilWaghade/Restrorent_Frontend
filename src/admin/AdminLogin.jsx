@@ -1,47 +1,60 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import { useNavigate, Link } from 'react-router-dom';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-
+import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate, Link } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
-    email: '',
-    password: ''
+    email: "",
+    password: "",
   });
 
+  // Handle input change
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // Handle login submit
   const handleLogin = async (e) => {
     e.preventDefault();
+
     try {
       const response = await axios.post(
-        'http://localhost:5000/api/auth/admin-login',
+        "http://localhost:5000/api/auth/admin/login", // ✅ match your backend controller route
         formData,
         { withCredentials: true }
       );
 
-      localStorage.setItem('isAdminAuthenticated', 'true');
-      toast.success('Login successful! Redirecting...');
+      const { id, name, email, message } = response.data;
 
+      // ✅ Save login state
+      localStorage.setItem("isAdminAuthenticated", "true");
+      localStorage.setItem(
+        "adminInfo",
+        JSON.stringify({ id, name, email })
+      );
+
+      toast.success(message || "Login successful! Redirecting...");
+
+      // Redirect after a short delay
       setTimeout(() => {
-        navigate('/admin/panel');  
-      }, 1000);
+        navigate("/admin/panel");
+      }, 1500);
 
-      console.log('Login successful:', response.data);
+      console.log("Login successful:", response.data);
     } catch (error) {
-      console.error('Login failed:', error.response?.data?.message);
-      toast.error(error.response?.data?.message || 'Login failed');
+      console.error("Login failed:", error.response?.data?.message);
+      toast.error(error.response?.data?.message || "Login failed");
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
       <ToastContainer position="top-right" autoClose={3000} />
+
       <form
         onSubmit={handleLogin}
         className="bg-white shadow-md rounded-xl p-8 w-full max-w-md"
@@ -78,7 +91,7 @@ const AdminLogin = () => {
         </button>
 
         <p className="mt-6 text-center text-sm text-gray-600">
-          Don't have an account?{' '}
+          Don’t have an account?{" "}
           <Link to="/admin/signup" className="text-blue-600 hover:underline">
             Signup here
           </Link>

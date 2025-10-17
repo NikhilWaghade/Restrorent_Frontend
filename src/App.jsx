@@ -22,20 +22,20 @@ function App() {
     <Router>
       <Navbar />
       <Routes>
-      
 
+         {/* pages routes */}
         <Route path="/" element={<Home />} />
         <Route path="/menu" element={<Menu />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/gallery" element={<Gallery />} />
         <Route path="/product/:id" element={<ProductDetail />} />
-        
+
+        {/* admin routes */}
       <Route path="/admin/login" element={<AdminLogin />} />
       <Route path="/admin/signup" element={<AdminSignup />} />
 
-        
-         {/* Protected Admin Panel Route */}
+      {/* Protected Admin Panel Route */}
      <Route
   path="/admin/panel"
   element={
