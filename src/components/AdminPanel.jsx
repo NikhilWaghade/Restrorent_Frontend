@@ -3,6 +3,7 @@ import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
+import { useAdminAuth } from "../context/AdminAuthContext";
 import { FaChartLine, FaPlus, FaList, FaSignOutAlt, FaHome } from "react-icons/fa";
 import { Line, Bar } from "react-chartjs-2";
 import {
@@ -40,6 +41,7 @@ const AdminPanel = () => {
   const [editId, setEditId] = useState(null);
   const [activeSection, setActiveSection] = useState("dashboard");
   const navigate = useNavigate();
+  const { logoutAdmin } = useAdminAuth();
 
   // Fetch Products
   const fetchProducts = async () => {
@@ -103,6 +105,11 @@ const AdminPanel = () => {
   // Logout
   const handleLogout = () => {
     localStorage.removeItem("isAdminAuthenticated");
+    localStorage.removeItem("adminInfo");
+    
+    // Update context state (IMPORTANT!)
+    logoutAdmin();
+    
     toast.success("Logged out successfully");
     setTimeout(() => navigate("/admin/login"), 1000);
   };
