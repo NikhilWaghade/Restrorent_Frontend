@@ -12,7 +12,8 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "https://restrorent-backend-c41v.vercel.app/api", 
+  // baseURL: "https://restrorent-backend-c41v.vercel.app/api", 
+    baseURL: "https://restrorent-backend.onrender.com", 
   withCredentials: true, 
 });
 
