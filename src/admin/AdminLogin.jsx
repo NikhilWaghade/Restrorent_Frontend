@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useAdminAuth } from "../context/AdminAuthContext";
+import API from "../api/api";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
@@ -24,10 +24,9 @@ const AdminLogin = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post(
-        "http://localhost:5000/api/auth/admin/login",
-        formData,
-        { withCredentials: true }
+      const response = await API.post(
+        "/api/auth/admin/login",
+        formData
       );
 
       const { id, name, email, message } = response.data;

@@ -8,9 +8,9 @@ import { FaStar, FaQuoteLeft, FaUserTie } from 'react-icons/fa';
 import { Typewriter } from 'react-simple-typewriter';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import FoodItemSkeleton from '../components/FoodItemSkeleton';
 import MenuItemSkeleton from '../components/MenuItemSkeleton';
+import API from '../api/api';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -38,7 +38,7 @@ const Home = () => {
         setLoadingPopular(true);
         setLoadingMenu(true);
         
-        const { data } = await axios.get("http://localhost:5000/api/menu");
+        const { data } = await API.get("/api/menu");
         
         if (Array.isArray(data) && data.length > 0) {
           // Sort by price (descending) and get top 5 for popular items

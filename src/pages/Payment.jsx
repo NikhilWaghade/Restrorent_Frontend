@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import API from '../api/api';
 
 const Payment = () => {
   const location = useLocation();
@@ -42,9 +42,14 @@ const Payment = () => {
 
     setLoading(true);
 
+    // try {
+    //   // Create order on backend
+    //   const { data: order } = await axios.post('http://localhost:5000/api/payment/order', {
+    //     amount: item.price * 100, // Convert to paise
+    //   });
     try {
       // Create order on backend
-      const { data: order } = await axios.post('http://localhost:5000/api/payment/order', {
+      const { data: order } = await API.post('/api/payment/order', {
         amount: item.price * 100, // Convert to paise
       });
 
@@ -63,7 +68,7 @@ const Payment = () => {
           
           // You can verify payment on backend here
           try {
-            await axios.post('http://localhost:5000/api/payment/verify', {
+            await API.post('/api/payment/verify', {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,

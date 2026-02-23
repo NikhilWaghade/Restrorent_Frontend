@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import MenuItemSkeleton from "../components/MenuItemSkeleton";
+import API from "../api/api"; // ✅ centralized axios instance
 
 const MenuSection = () => {
   const [menuItems, setMenuItems] = useState([]);
@@ -13,7 +13,10 @@ const MenuSection = () => {
     const fetchMenu = async () => {
       try {
         setLoading(true);
-        const { data } = await axios.get("http://localhost:5000/api/menu");
+
+        // ✅ production-safe API call
+        const { data } = await API.get("/api/menu");
+
         if (Array.isArray(data)) {
           setMenuItems(data);
         } else {
@@ -26,6 +29,7 @@ const MenuSection = () => {
         setLoading(false);
       }
     };
+
     fetchMenu();
   }, []);
 
@@ -36,7 +40,7 @@ const MenuSection = () => {
         <div className="absolute inset-0 w-full">
           <motion.img
             src="https://img.freepik.com/premium-photo/surprising-cooking-food-concept_779468-1466.jpg"
-            alt="About background"
+            alt="Menu background"
             className="w-full h-full object-cover"
             initial={{ scale: 1.2 }}
             animate={{ scale: 1 }}
@@ -44,8 +48,9 @@ const MenuSection = () => {
           />
         </div>
         <div className="absolute inset-0 bg-black bg-opacity-10"></div>
+
         <div className="relative max-w-3xl mx-auto text-center">
-          <motion.h2 
+          <motion.h2
             className="text-5xl font-bold mb-6 text-white"
             initial={{ opacity: 0, y: -50 }}
             animate={{ opacity: 1, y: 0 }}
@@ -53,7 +58,8 @@ const MenuSection = () => {
           >
             Menu
           </motion.h2>
-          <motion.p 
+
+          <motion.p
             className="text-lg font-bold text-white"
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
@@ -62,16 +68,14 @@ const MenuSection = () => {
             At Fresheat, we pride ourselves on delivering freshly prepared,
             wholesome meals every day — crafted with the finest ingredients,
             bursting with vibrant flavors, and made to nourish both body and
-            soul. Our commitment is to serve you culinary creations that are as
-            delicious as they are nutritious, ensuring every bite feels like
-            home-cooked goodness.
+            soul.
           </motion.p>
         </div>
       </section>
 
-      {/* menu image section */}
+      {/* menu cards section */}
       <section className="max-w-6xl mx-auto px-4 py-12">
-        <motion.h2 
+        <motion.h2
           className="text-3xl font-bold text-red-600 text-center mb-10"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -80,6 +84,7 @@ const MenuSection = () => {
         >
           Swaad Nation Foods Menu
         </motion.h2>
+
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {loading ? (
             <MenuItemSkeleton count={6} />
@@ -87,7 +92,7 @@ const MenuSection = () => {
             menuItems.map((item, idx) => (
               <motion.div
                 key={item.id}
-                className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 flex flex-col justify-between hover-lift"
+                className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 flex flex-col justify-between"
                 initial={{ opacity: 0, y: 80, rotateX: 45 }}
                 whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
                 viewport={{ once: true, amount: 0.2 }}
@@ -98,26 +103,29 @@ const MenuSection = () => {
                   <motion.img
                     src={item.image_url}
                     alt={item.name}
-                    className="w-96 h-72 object-cover transition-transform duration-300 transform-origin-center mx-auto"
+                    className="w-96 h-72 object-cover mx-auto"
                     whileHover={{ scale: 1.1 }}
                   />
                 </Link>
 
-                <motion.div 
-                  className="p-4 flex flex-col flex-grow justify-between hover:bg-black hover:text-white"
+                <motion.div
+                  className="p-4 flex flex-col flex-grow justify-between hover:bg-black hover:text-white transition"
                   initial={{ opacity: 0 }}
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true }}
                   transition={{ delay: idx * 0.1 + 0.3, duration: 0.5 }}
                 >
-                  <div className="">
+                  <div>
                     <h3 className="text-xl font-bold">{item.name}</h3>
-                    <p className="font-semibold text-red-500">${item.price}</p>
+                    <p className="font-semibold text-red-500">
+                      ₹{item.price}
+                    </p>
                     <p className="text-sm mt-2">{item.description}</p>
                   </div>
+
                   <motion.button
                     onClick={() => navigate(`/product/${item.id}`)}
-                    className="mt-4 bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700 transition"
+                    className="mt-4 bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >

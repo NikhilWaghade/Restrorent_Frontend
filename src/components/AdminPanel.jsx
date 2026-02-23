@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 import { useAdminAuth } from "../context/AdminAuthContext";
 import { FaChartLine, FaPlus, FaList, FaSignOutAlt, FaHome } from "react-icons/fa";
+import API from "../api/api";
 import { Line, Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -17,6 +17,9 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+
+// API Base URL
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://restrorent-backend.onrender.com';
 
 ChartJS.register(
   CategoryScale,
@@ -46,7 +49,7 @@ const AdminPanel = () => {
   // Fetch Products
   const fetchProducts = async () => {
     try {
-      const { data } = await axios.get("http://localhost:5000/api/menu");
+      const { data } = await API.get("/api/menu");
       setProducts(data);
     } catch (error) {
       console.error(error);
@@ -65,10 +68,12 @@ const AdminPanel = () => {
       const payload = { ...form, price: Number(form.price) };
 
       if (editId) {
-        await axios.put(`http://localhost:5000/api/menu/${editId}`, payload);
+        // await axios.put(`http://localhost:5000/api/menu/${editId}`, payload);
+        await axios.put(`https://restrorent-backend.onrender.com/api/menu/${editId}`, payload);
         toast.success("Product updated successfully!");
       } else {
-        await axios.post("http://localhost:5000/api/menu", payload);
+        // await axios.post("http://localhost:5000/api/menu", payload);
+        await axios.post("https://restrorent-backend.onrender.com/api/menu", payload);
         toast.success("Product added successfully!");
       }
 
@@ -85,7 +90,7 @@ const AdminPanel = () => {
   // Delete
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/api/menu/${id}`);
+      await API.delete(`/api/menu/${id}`);
       toast.success("Product deleted successfully!");
       fetchProducts();
     } catch (error) {

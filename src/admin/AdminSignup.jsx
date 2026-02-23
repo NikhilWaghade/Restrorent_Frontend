@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
-import { ToastContainer, toast } from 'react-toastify'; // import toast
-import 'react-toastify/dist/ReactToastify.css'; // toast styles
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import API from '../api/api';
 
 const AdminSignup = () => {
   const navigate = useNavigate();
@@ -19,10 +19,9 @@ const AdminSignup = () => {
   const handleSignup = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(
-        'http://localhost:5000/api/auth/admin/signup',
-        formData,
-        { withCredentials: true }
+      const response = await API.post(
+        '/api/auth/admin/signup',
+        formData
       );
 
       toast.success('Signup successful! Please login.');

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import axios from 'axios';
+import API from '../api/api';
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -24,7 +24,7 @@ const ProductDetail = () => {
 
     const fetchItem = async () => {
       try {
-        const { data } = await axios.get(`http://localhost:5000/api/menu/${id}`);
+        const { data } = await API.get(`/api/menu/${id}`);
         setItem(data);
         setReviews(data.reviews || []);
         setLoading(false);
@@ -60,7 +60,7 @@ const ProductDetail = () => {
         comment: userComment,
       };
       
-      const { data } = await axios.post(`http://localhost:5000/api/menu/${id}/reviews`, newReview);
+      const { data } = await API.post(`/api/menu/${id}/reviews`, newReview);
       
       console.log("API Response:", data);
       
