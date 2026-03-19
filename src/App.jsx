@@ -16,6 +16,7 @@ import ProductDetail from "./components/ProductDetail";
 import AdminLogin from "./admin/AdminLogin";
 import AdminSignup from "./admin/AdminSignup";
 import ProtectedRoute from "./components/ProtectedRoute";
+import QRLanding from "./pages/QRLanding";
 
 function AppContent() {
   const location = useLocation();
@@ -24,7 +25,7 @@ function AppContent() {
   useEffect(() => {
     // Scroll to top on page change
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    
+
     // Show loader
     setLoading(true);
     const timer = setTimeout(() => {
@@ -46,6 +47,11 @@ function AppContent() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/gallery" element={<Gallery />} />
         <Route path="/product/:id" element={<ProductDetail />} />
+
+        {/* qr landing page */}
+        <Route path="/qr" element={<QRLanding />} />
+
+        {/* payment  */}
         <Route path="/payment" element={<Payment />} />
 
         {/* admin routes */}
